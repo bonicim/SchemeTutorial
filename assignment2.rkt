@@ -14,7 +14,26 @@
 
 
 
+;                  
+;                  
+;                  
+;   ;;;;;     ;;   
+;   ;    ;   ; ;   
+;   ;    ;  ;  ;   
+;   ;    ;     ;   
+;   ;    ;     ;   
+;   ;   ;      ;   
+;   ;;;;       ;   
+;   ;          ;   
+;   ;          ;   
+;   ;          ;   
+;   ;       ;;;;;;;
+;                  
+;                  
+;                  
+;                  
 
+;Problem1
 ;;;; Data Analysis and Definitions:
 ;; A bool1 is a Boolean
 ;; A bool2 is a Boolean
@@ -47,12 +66,24 @@
 
 
 
-
-
-
-
-
-
+;                  
+;                  
+;                  
+;   ;;;;;    ;;;;  
+;   ;    ;  ;    ; 
+;   ;    ;       ; 
+;   ;    ;       ; 
+;   ;    ;      ;  
+;   ;   ;      ;   
+;   ;;;;      ;    
+;   ;        ;     
+;   ;       ;      
+;   ;       ;      
+;   ;       ;;;;;; 
+;                  
+;                  
+;                  
+;   
 
 ;;;; Data Definitions: None
 
@@ -173,7 +204,29 @@
 
 
 
-;PROBLEM 3
+
+
+
+
+
+;                  
+;                  
+;                  
+;   ;;;;;   ;;;;   
+;   ;    ;      ;  
+;   ;    ;      ;  
+;   ;    ;      ;  
+;   ;    ;     ;   
+;   ;   ;    ;;;   
+;   ;;;;        ;  
+;   ;            ; 
+;   ;            ; 
+;   ;           ;  
+;   ;       ;;;;   
+;                  
+;                  
+;                  
+;  
 
 ;;;; Data Definitions:
 ;; An Hour is a NonNegInteger
@@ -265,3 +318,164 @@
 
 
 
+;                  
+;                  
+;                  
+;   ;;;;;       ;  
+;   ;    ;     ;;  
+;   ;    ;    ; ;  
+;   ;    ;   ;  ;  
+;   ;    ;   ;  ;  
+;   ;   ;   ;   ;  
+;   ;;;;   ;    ;  
+;   ;      ;;;;;;;;
+;   ;           ;  
+;   ;           ;  
+;   ;           ;  
+;                  
+;                  
+;                  
+;     
+
+;;;; Data Definitions:
+;; A LetterGrade is one of 
+;; - 'A 
+;; - 'A- 
+;; - 'B+ 
+;; - 'B
+;; - 'B- 
+;; - 'C+ 
+;; - 'C
+;; - 'C- 
+;; - 'D+
+;; - 'D
+;; - 'D-
+;; - 'F
+;; INTERP: represents a letter grade for course assignments 
+
+
+
+;; Deconstructor Template
+;; letter-grade-fn : letter-grade -> ???
+#; (define (letter-grade-fn letter-grade)
+     (cond
+       [(symbol=? letter-grade 'A) ...]
+       [(symbol=? letter-grade 'A-) ...]
+       [(symbol=? letter-grade 'B+) ...]
+       [(symbol=? letter-grade 'B) ...]
+       [(symbol=? letter-grade 'B-) ...]
+       [(symbol=? letter-grade 'C+) ...]
+       [(symbol=? letter-grade 'C) ...]
+       [(symbol=? letter-grade 'C-) ...]
+       [(symbol=? letter-grade 'D+) ...]
+       [(symbol=? letter-grade 'D) ...]
+       [(symbol=? letter-grade 'D-) ...]
+       [(symbol=? letter-grade 'F) ...]))
+
+;; A GPA is a NonNegReal
+;; WHERE: GPA is in the range of [0,4]
+;; INTERP: the GPA of a letter grade at X University
+
+;;;; Signature
+;; gpa : LetterGrade -> GPA 
+
+;;;; Purpose: 
+;; GIVEN: letter-grade
+;; RETURNS: the associated GPA
+
+;;;; Examples:
+;; (gpa 'A) => 4.000
+;; (gpa 'A) => 3.667
+
+;;;; Function Definition:
+(define (gpa letter-grade)
+  (cond
+    [(symbol=? letter-grade 'A) 4.0]
+    [(symbol=? letter-grade 'A-)  3.667]
+    [(symbol=? letter-grade 'B+) 3.333]
+    [(symbol=? letter-grade 'B) 3.0]
+    [(symbol=? letter-grade 'B-) 2.667]
+    [(symbol=? letter-grade 'C+) 2.333]
+    [(symbol=? letter-grade 'C) 2.0]
+    [(symbol=? letter-grade 'C-) 1.667]
+    [(symbol=? letter-grade 'D+) 1.333]
+    [(symbol=? letter-grade 'D) 1.0]
+    [(symbol=? letter-grade 'D-) 0.667]
+    [(symbol=? letter-grade 'F) 0]))
+
+
+;;;; Tests:
+(check-expect (gpa 'A) 4.0)
+
+
+
+
+;                  
+;                  
+;                  
+;   ;;;;;   ;;;;;; 
+;   ;    ;  ;      
+;   ;    ;  ;      
+;   ;    ;  ;      
+;   ;    ;  ;;;;   
+;   ;   ;       ;  
+;   ;;;;         ; 
+;   ;            ; 
+;   ;            ; 
+;   ;           ;  
+;   ;       ;;;;   
+;                  
+;                  
+;                  
+;  
+
+
+;;;; Data Definitions:
+;; A FileSize is a NonNegReal
+;; INTERP: represents the size of a file
+
+;; A Unit is one of
+;; -'KB
+;; -'MB
+;; -'GB
+;; -'TB
+;; -'PB
+;; -'EB
+;; -'ZB
+;; -'YB
+;; INTERP: represents the unit size of a file
+
+;; Deconstructor Template
+;; unit-fn : unit -> ???
+#; (define (unit-fn unit)
+     (cond
+       [(symbol=? unit 'KB) ...]))
+
+;; A Bytes is a NonNegReal
+;; INTERP: represents the size of a file in bytes
+
+
+;;;; Signature
+;; bytes : FileSize Unit -> Bytes
+       
+;;;; Purpose: 
+;; GIVEN: the filesize and units of the file
+;; RETURNS: the total number of bytes
+
+;;;; Examples:
+;; (bytes (10 'MB)) => 10485760
+       
+;;;; Function Definition:
+(define (bytes size unit)
+  (cond
+    [(symbol=? 'KB unit) (* size (expt 2 10))]
+    [(symbol=? 'MB unit) (* size (expt 2 20))]
+    [(symbol=? 'GB unit) (* size (expt 2 30))]
+    [(symbol=? 'TB unit) (* size (expt 2 40))]
+    [(symbol=? 'PB unit) (* size (expt 2 50))]
+    [(symbol=? 'EB unit) (* size (expt 2 60))]
+    [(symbol=? 'ZB unit) (* size (expt 2 70))]
+    [(symbol=? 'YB unit) (* size (expt 2 80))]))
+
+;;;; Tests:
+(check-expect (bytes 10 'MB) 10485760)

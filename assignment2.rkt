@@ -49,10 +49,7 @@
 
 ;;;; Function Definition:
 (define (logical-xor bool1 bool2)
-  (cond
-    [(and bool1 bool2) false]
-    [(not(and bool1 bool2)) false]
-    [else true]))
+  (not (boolean=? bool1 bool2)))
 
 ;;;; Tests:
 (check-expect (logical-xor true true)
@@ -60,9 +57,9 @@
 (check-expect (logical-xor false false)
               false)
 (check-expect (logical-xor true false)
-              false)
+              true)
 (check-expect (logical-xor false true)
-              false)
+              true)
 
 
 

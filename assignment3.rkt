@@ -80,7 +80,7 @@
 ;; Constructor Template:
 ;; A Sweater is (make-sweater Symbol PosInt String)
 ;; INTERP: represents a sweater with the sweater's material 
-;;         it's size and the name of the manufacturer
+;;         its size and the name of the manufacturer
 
 ;; sweater-material: Sweater -> Symbol           
 ;; sweater-size: Sweater -> PosInt               

@@ -107,7 +107,7 @@
 ;;;; Tests
 (check-expect (undefined? 1) #false)
 (check-expect (undefined? 't) #false)
-(check-expect (undefined? UNDEFINED) #true)
+(check-expect (undefined? 'undefined) #true)
 
 
 ;;;; Data Analysis and Definitions:
@@ -125,7 +125,7 @@
 ;;;; Signature: add : MaybeNumber MaybeNumber -> MaybeNumber
 
 ;;;; Purpose: 
-;; GIVEN: two numbers that maybe undefined
+;; GIVEN: two MaybeNumbers
 ;; RETURNS: the sum of both numbers if defined; otherwise 'undefined
 ;; if one of the maybenumbers is the symbol 'undefined, return 'undefined
 
@@ -154,8 +154,7 @@
 ;; none-undef?: MaybeNumber MaybeNumber -> Boolean
 ;;;; Purpose
 ;; GIVEN: two maybe numbers
-;; RETURNS: true if both inputs are defined (are numbers)
-;;          false otherwise
+;; RETURNS: true if both inputs are defined; false otherwise
 
 ;;;; Examples
 ;;(none-undef? 1 2) => #true
@@ -180,8 +179,7 @@
 ;; either-undef?: MaybeNumber MaybeNumber -> Boolean
 ;;;; Purpose
 ;; GIVEN: two maybe numbers
-;; RETURNS: true if either or both inputs are undefined 
-;;          false otherwise
+;; RETURNS: true if either or both inputs are undefined; false otherwise
 
 ;;;; Examples
 ;;(either-undef? 1 2) => #false
@@ -261,9 +259,9 @@
   
 
 ;;;; Tests:
-(check-expect (add1-minute 0 0) "0:1")
-(check-expect (add1-minute 0 59) "1:0")
-(check-expect (add1-minute 23 59) "0:0")
+(check-expect (add1-minute 0 0) "00:01")
+(check-expect (add1-minute 0 59) "01:00")
+(check-expect (add1-minute 23 59) "00:00")
 (check-expect (add1-minute 12 23) "12:24")  
 
 ;;;; Data Definitions: None
@@ -305,13 +303,69 @@
 ;;;; Examples:
 ;; (time->string 23 59) => "23:59"
 ;; (time->string 13 0) => "13:00"
+;; (time->string 17 0) => "17:00"
+;; (time->string 17 3) => "17:03"
+;; (time->string 5 13) => "05:13"
+;; (time->string 2 0) => "02:00"
+;; (time->string 0 0) => "00:00"
+
 
 ;;;; Function Definition:
 (define (time->string hour minute)
-  (string-append (number->string hour) ":" (number->string minute)))
+  (cond
+    [(and (single-digit? hour) (single-digit? minute)) (string-append (append-leading-zero (number->string hour)) ":" (append-leading-zero(number->string minute)))]
+    [(single-digit? minute) (string-append (number->string hour) ":" (append-leading-zero (number->string minute)))]
+    [(single-digit? hour) (string-append (append-leading-zero (number->string hour)) ":" (number->string minute))]
+    [else(string-append (number->string hour) ":" (number->string minute)) ]))
   
 ;;;; Tests:
-(check-expect (time->string 10 10) "10:10")
+(check-expect (time->string 23 59) "23:59")
+(check-expect (time->string 13 0) "13:00")
+(check-expect (time->string 13 10) "13:10")
+(check-expect (time->string 9 20) "09:20")
+(check-expect (time->string 9 2) "09:02")
+
+
+;;;; Data Definitions:
+;; A Time is one of
+;; - Minute
+;; - Hour
+
+;;;; Signature
+;; single-digit? : Time -> Boolean
+
+;;;; Purpose: to check if a time is less than ten  
+;; GIVEN: a Time
+;; RETURNS: true if Time is less than 10; false otherwise
+
+;;;; Examples:
+;; (single-digit? 9) => #True
+;; (single-digit? 23) => #False
+
+;;;; Function Definition:
+(define (single-digit? time)
+  (cond
+    [(< time 10) true]
+    [else false]))
+
+;;;; Tests:
+(check-expect (single-digit? 59) false)
+(check-expect (single-digit? 5) true)
+
+
+;;;; Data Definitions:
+;; A Num is a String
+
+;;;; Signature
+;; append-leading-zero : String -> String
+
+;;;; Purpose: to add a leading zero to a string
+;; GIVEN: a String
+;; RETURNS: a string containing a leading zero of the nunber
+
+;;;; Function Definition:
+(define (append-leading-zero num)
+  (string-append "0" num)) 
 
 
 
@@ -382,7 +436,7 @@
 
 ;;;; Examples:
 ;; (gpa 'A) => 4.000
-;; (gpa 'A) => 3.667
+;; (gpa 'A-) => 3.667
 
 ;;;; Function Definition:
 (define (gpa letter-grade)
@@ -403,6 +457,7 @@
 
 ;;;; Tests:
 (check-expect (gpa 'A) 4.0)
+(check-expect (gpa 'A-) 3.667)
 
 
 

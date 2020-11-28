@@ -1,6 +1,10 @@
 ;; The first three lines of this file were inserted by DrRacket. They record metadata
 ;; about the language level of this file in a form that our tools can easily process.
 #reader(lib "htdp-beginner-reader.ss" "lang")((modname assignment3) (read-case-sensitive #t) (teachpacks ()) (htdp-settings #(#t constructor repeating-decimal #f #t none #f () #f)))
+(require  2htdp/image)
+
+
+
 ; DESIGN RECIPE TEMPLATE
 ;;;; Data Definitions:
 ;; Deconstructor Template
@@ -44,7 +48,10 @@
      ... (student-id s) ...
      ... (student-grade s) ...)
 
-     
+(check-expect (make-student "Foob" 42 3) (make-student "Foob" 42 3) )
+(check-expect (student-name (make-student "Foob" 42 3)) "Foob")
+(check-expect (student-id (make-student "Foob" 42 3)) 42)
+(check-expect (student-grade (make-student "Foob" 42 3)) 3)
 
 
 (define-struct container (width height depth capacity label))
@@ -107,7 +114,6 @@
 
 
 ;;;; Signatures 
-
 ;; game-name: Game -> String                       
 ;; game-min-ram: Game -> PosInt                    
 ;; game-min-graphics-ram:  Game -> PosInt          
@@ -123,6 +129,11 @@
     ... (game-min-ram g) ...          
     ... (game-min-graphics-ram g) ... 
     ... (game-online? g) ...)
+
+
+
+
+
 
 ;; P2
 
@@ -164,6 +175,8 @@
 
 
 
+
+
 ;; P3
 
 ;;;; Data Definitions:
@@ -186,7 +199,7 @@
 ;; (make-amount 3 4) 
 
 ;;;; Signature
-;; add-to-amount : Amount Dollars Cents => Amonut
+;; add-to-amount : Amount Dollars Cents => Amount
 
 ;;;; Purpose: To add dollars and cents to the amount
 ;; GIVEN: the current amount and the dollars and cents to be added
@@ -212,6 +225,7 @@
 ;;;; Tests:
 (check-expect (add-to-amount (make-amount 1 99) 1 1) (make-amount 3 0))
 (check-expect (add-to-amount (make-amount 2 23) 4 22) (make-amount 6 45))
+(check-expect (add-to-amount (make-amount 2 23) 8 22) (make-amount 10 45))
 
 
 
@@ -266,6 +280,7 @@
 
 ;;; Data Examples
 (define JOHN-FULL (make-full "John" "Doe"))
+(define JANE-FULL (make-full "Jane" "Doe"))
 
 
 
@@ -340,7 +355,12 @@
                                             'Jul
                                             2003))
 
-
+(check-expect JOHN-FULL-CONF (make-conference "Anatomy of a mouse"
+                                        JOHN-FULL
+                                        "Animal Anatomy"
+                                        "London, UK"
+                                        'Jul
+                                        2003))
 ;; Deconstructor Template:
 ;; conference-fn : Conference => ???
 #; (define (conference-fn)
@@ -404,13 +424,11 @@
 
 
 ;;; Data Examples
-
 (define JOHN-FULL-TR (make-techreport "Anatomy of a mouse"
                                       JOHN-FULL
                                       1234
                                       "Mouse University"
                                       2001))
-
 
 (define JOHN-OFFICIAL-TR (make-techreport "Anatomy of a mouse"
                                           JOHN-OFFICIAL
@@ -428,11 +446,6 @@
      ... techreport-institution ...
      ... techreport-year ...)
 
-
-
-
-
-
 ;; A Publication is one of
 ;; - Conference
 ;; - Journal
@@ -441,23 +454,22 @@
 ;;         technical report. 
 
 ;; Deconstructor Template:
-;; 
-
-
-;; Data Examples
-
-
-
+;; publication-fn : Publication => ???
+#; (define (publication-fn a-publication)
+     (cond
+       [(conference? a-publication) ...]
+       [(journal? a-publication) ...]
+       [(tech-report? a-publication ...)]))
 
 ;;;; Definitions
 ;; N/A
 
 ;;;; Signature
-;; tr->journal : TechnicalReport Journal
+;; tr->journal : TechnicalReport Journal => Journal
 
-;;;; Purpose: To turn a technical report into a Journal
+;;;; Purpose: Transforms technical report into a journal
 ;; GIVEN: a technical report, the journal name and its issue, month, year
-;; RETURNS: a journal with the technical reports information
+;; RETURNS: a journal with the technical report's information
 
 ;;;; Examples:
 ;;(tr->journal (make-techreport "My Mouse Report"
@@ -474,7 +486,100 @@
 ;;(make-journal "My Mouse Report" JANE-FULL 23 'Feb 2002)
 
 ;;;; Function Definition:
+(define (tr->journal tech-report journal)
+  (make-journal (techreport-title tech-report) (techreport-author tech-report)
+                (journal-jname journal) (journal-issue journal) (journal-month journal) (journal-year journal)))
+
 
 ;;;; Tests:
+(check-expect (tr->journal (make-techreport "Covid-19 Report"
+                                            JANE-FULL
+                                            1234
+                                            "Harvard College"
+                                            2020)
+                           (make-journal "Post-Mortem Covid-19"
+                                         JOHN-FULL
+                                         "Journal of American Medicine"
+                                         19
+                                         'May
+                                         2020))
+              (make-journal "Covid-19 Report" JANE-FULL "Journal of American Medicine" 19 'May 2020))
+                                                
 
-     
+;;;; Data Definitions
+;; Image comes from the image library from Racket
+
+;;;; Signature
+;; publication->image : Publication => Image
+
+;;;; Purpose: To transform a publication into a formatted text image
+;; GIVEN: a Publication
+;; RETURNS: an Image that is a formatted text image of a Publication
+
+;;;; Examples:
+;; (publication->image JOHN-FULL-CONF)  
+;; (publication->image JOHN-OFFICIAL-CONF)
+;; (publication->image JOHN-FULL-JOURNAL)
+;; (publication->image JOHN-OFFICIAL-JOURNAL)
+;; (publication->image JOHN-FULL-TR)
+;; (publication->image JOHN-OFFICIAL-TR)
+
+;;;; Function Definition:
+(define (publication->image a-publication)
+  (cond
+    [(conference? a-publication) (cond
+                                   [(full? (conference-author a-publication))
+                                    (beside (text/font (string-append "\"" (conference-title a-publication) "\". ") 20 "black" #f 'modern 'normal 'normal #f)
+                                            (text/font (string-append (full-first (conference-author a-publication)) " " (full-last (conference-author a-publication)) ". ") 20 "black" #f 'modern 'normal 'normal #f)
+                                            (text/font (string-append (conference-cname a-publication) ", ") 20 "black" #f 'modern 'italic 'normal #f)
+                                            (text/font (string-append (conference-location a-publication) ". ") 20 "black" #f 'modern 'italic 'normal #f)
+                                            (text/font (string-append (symbol->string (conference-month a-publication)) ", ") 20 "black" #f 'modern 'normal 'bold #f)
+                                            (text/font (string-append (number->string (conference-year a-publication)) ". ") 20 "black" #f 'modern 'normal 'bold #f)
+                                            )]
+                                    [(official? (conference-author a-publication))
+                                     (beside (text/font (string-append "\"" (conference-title a-publication) "\". ") 20 "black" #f 'modern 'normal 'normal #f)
+                                             (text/font (string-append (official-title (conference-author a-publication)) " " (official-first (conference-author a-publication)) " " (official-middle (conference-author a-publication)) " " (official-last (conference-author a-publication)) ". ") 20 "black" #f 'modern 'normal 'normal #f)
+                                             (text/font (string-append (conference-cname a-publication) ", ") 20 "black" #f 'modern 'italic 'normal #f)
+                                             (text/font (string-append (conference-location a-publication) ". ") 20 "black" #f 'modern 'italic 'normal #f)
+                                             (text/font (string-append (symbol->string (conference-month a-publication)) ", ") 20 "black" #f 'modern 'normal 'bold #f)
+                                             (text/font (string-append (number->string (conference-year a-publication)) ". ") 20 "black" #f 'modern 'normal 'bold #f)
+                                             )])]
+    [(journal? a-publication) (cond
+                               [(full? (journal-author a-publication))
+                                (beside (text/font (string-append "\"" (journal-title a-publication) "\". ") 20 "black" #f 'modern 'normal 'normal #f)
+                                        (text/font (string-append (full-first (journal-author a-publication)) " " (full-last (journal-author a-publication)) ". ") 20 "black" #f 'modern 'normal 'normal #f)
+                                        (text/font (string-append (journal-jname a-publication) ", ") 20 "black" #f 'modern 'italic 'normal #f)
+                                        (text/font (string-append (number->string (journal-issue a-publication)) ", ") 20 "black" #f 'modern 'italic 'normal #f)
+                                        (text/font (string-append (symbol->string (journal-month a-publication)) ", ") 20 "black" #f 'modern 'normal 'bold #f)
+                                        (text/font (string-append (number->string (journal-year a-publication)) ". ") 20 "black" #f 'modern 'normal 'bold #f))]
+
+                               [(official? (journal-author a-publication))
+                                (beside (text/font (string-append "\"" (journal-title a-publication) "\". ") 20 "black" #f 'modern 'normal 'normal #f)
+                                        (text/font (string-append (official-title (journal-author a-publication)) " " (official-first (journal-author a-publication)) " " (official-middle (journal-author a-publication)) " " (official-last (journal-author a-publication)) ". ") 20 "black" #f 'modern 'normal 'normal #f)
+                                        (text/font (string-append (journal-jname a-publication) ", ") 20 "black" #f 'modern 'italic 'normal #f)
+                                        (text/font (string-append (number->string (journal-issue a-publication)) ", ") 20 "black" #f 'modern 'italic 'normal #f)
+                                        (text/font (string-append (symbol->string (journal-month a-publication)) ", ") 20 "black" #f 'modern 'normal 'bold #f)
+                                        (text/font (string-append (number->string (journal-year a-publication)) ". ") 20 "black" #f 'modern 'normal 'bold #f))])]
+
+    [(techreport? a-publication) (cond
+                                   [(full? (techreport-author a-publication))
+                                    (beside (text/font (string-append "\"" (techreport-title a-publication) "\". ") 20 "black" #f 'modern 'normal 'normal #f)
+                                            (text/font (string-append (full-first (techreport-author a-publication)) " " (full-last (techreport-author a-publication)) ". ") 20 "black" #f 'modern 'normal 'normal #f)
+                                            (text/font (string-append (techreport-institution a-publication) ", ") 20 "black" #f 'modern 'italic 'normal #f)
+                                            (text/font (string-append (number->string (techreport-tr-id a-publication)) ". ") 20 "black" #f 'modern 'italic 'normal #f)
+                                            (text/font (string-append (number->string (techreport-year a-publication)) ". ") 20 "black" #f 'modern 'normal 'bold #f))]
+
+                                   [(official? (techreport-author a-publication))
+                                    (beside (text/font (string-append "\"" (techreport-title a-publication) "\". ") 20 "black" #f 'modern 'normal 'normal #f)
+                                            (text/font (string-append (official-title (techreport-author a-publication)) " " (official-first (techreport-author a-publication)) " " (official-middle (techreport-author a-publication)) " " (official-last (techreport-author a-publication)) ". ") 20 "black" #f 'modern 'normal 'normal #f)
+                                            (text/font (string-append (techreport-institution a-publication) ", ") 20 "black" #f 'modern 'italic 'normal #f)
+                                            (text/font (string-append (number->string (techreport-tr-id a-publication)) ". ") 20 "black" #f 'modern 'italic 'normal #f)
+                                            (text/font (string-append (number->string (techreport-year a-publication)) ". ") 20 "black" #f 'modern 'normal 'bold #f))])]
+    ))
+
+(publication->image JOHN-FULL-CONF)
+(publication->image JOHN-OFFICIAL-CONF)
+(publication->image JOHN-FULL-JOURNAL)
+(publication->image JOHN-OFFICIAL-JOURNAL)
+(publication->image JOHN-FULL-TR)
+(publication->image JOHN-OFFICIAL-TR)
